@@ -5,3 +5,10 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+require 'csv'
+
+CSV.foreach('a.csv', headers: true, converters: :all) do |row|
+    data = row.to_hash
+    haunt = Haunt.create(name: data['location'], description: data['description'])
+    HauntsLocation.create(city: data['city'], state: data['state'], state_abbrev: data['state_abbrev'], latitude: data['latitude'], longitude: data['longitude'], haunts_id: haunt.id)
+end
