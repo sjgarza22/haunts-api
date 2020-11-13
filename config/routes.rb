@@ -9,4 +9,7 @@ Rails.application.routes.draw do
       resources :users do
         resources :favortes
       end
+
+      resources :users, only: [:create]
+      post '/login', to: 'auth#create'
 end
