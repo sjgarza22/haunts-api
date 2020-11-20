@@ -24,7 +24,7 @@ class UsersController < ApplicationController
         user = User.find_by_id(params['id'])
 
         if pokemon.destroy
-            render json: UserSerializer.new(user).to_serialized_json
+            render json: UserSerializer.new(user).serialized_json
         else
             render json: { message: "User could not be found" }
         end
