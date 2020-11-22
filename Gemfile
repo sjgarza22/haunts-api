@@ -21,6 +21,7 @@ gem 'geocoder'
 gem 'jwt'
 gem 'fast_jsonapi'
 gem 'dotenv'
+gem 'dotenv-rails'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
