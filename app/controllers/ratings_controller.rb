@@ -29,9 +29,19 @@ class RatingsController < ApplicationController
 
         if newRating && check_new_rating(rating_params['rating'])
             newRating.rating = rating_params['rating']
-            render json: RatingSerializer.new(newRating).serialized_json, status: :update
+            render json: RatingSerializer.new(newRating).serialized_json, status: :successful
         else
-            render json: { message: 'rating not updated' }, status: :not_updated
+            render json: { message: 'rating not updated' }, status: :not_successful
+        end
+    end
+
+    def destroy
+        rating = Rating.find_by_id(rating_params['id'])
+
+        if rating.destroy
+            render json: RatingSerializer.new(rating).serialized_json, status: :successful
+        else
+            render json: { message: 'rating could not be deleted; could not be found.' }, status: :not_successful
         end
     end
 
