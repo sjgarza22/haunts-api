@@ -7,8 +7,14 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 require 'csv'
 
-CSV.foreach('a.csv', headers: true, converters: :all) do |row|
-    data = row.to_hash
-    haunt = Haunt.create(name: data['location'], description: data['description'])
-    HauntsLocation.create(city: data['city'], state: data['state'], state_abbrev: data['state_abbrev'], latitude: data['latitude'], longitude: data['longitude'], haunts_id: haunt.id)
+CSV.foreach('app/assets/data/haunted_places_test_data_2.csv', headers: true, converters: :all) do |row|
+        data = row.to_hash
+        haunt = Haunt.new(name: data['location'], description: data['description'])
+        haunt.save
+        haunt.build_haunts_location(city: data['city'], state: data['state'], state_abbrev: data['state_abbrev'], latitude: data['latitude'], longitude: data['longitude'])
+        haunt.save
 end
+
+User.create(email: 'test_user1@gmail.com', password: 'password123');
+User.create(email: 'test_user2@gmail.com', password: 'password123');
+User.create(email: 'test_user3@gmail.com', password: 'password123');
