@@ -4,11 +4,11 @@ Rails.application.routes.draw do
         resources :haunts_locations, only: [:show]
       end
 
-      resources :ratings
-
-      resources :users do
-        resources :favortes
+      resources :haunts do
+        resources :ratings, only: [:index]
       end
+
+      resources :ratings
 
       resources :users, only: [:create]
       post '/login', to: 'auth#create'
