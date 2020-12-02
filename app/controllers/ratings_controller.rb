@@ -1,12 +1,18 @@
 class RatingsController < ApplicationController
 
-    def new
-        rating = Rating.new
+    def index
+        ratings = Rating.where(haunt_id: params[:haunt_id], user_id: current_user.id)
+
+        if ratings
+            render json: RatingSerializer.new(ratings).serialized_json, status: :accepted
+        else
+            render json: { message: 'ratings not found' }, status: :not_acceptable
+        end
     end
 
     def create
-        rating = Rating.create(rating_params)
-
+        rating = Rating.create(rating: rating_params[:rating], haunt_id: rating_params[:haunt_id], user_id: current_user.id)
+        # byebug
         if rating.valid?
             render json: RatingSerializer.new(rating).serialized_json, status: :accepted
         else
@@ -25,37 +31,38 @@ class RatingsController < ApplicationController
     end
 
     def update
-        newRating = Rating.find_by_id(rating_params['id'])
+        rating = Rating.find_by_id(rating_params['id'])
+        rating.update(rating: rating_params[:rating])
 
-        if newRating && check_new_rating(rating_params['rating'])
-            newRating.rating = rating_params['rating']
-            render json: RatingSerializer.new(newRating).serialized_json, status: :successful
+        if rating.valid?
+            render json: RatingSerializer.new(rating).serialized_json, status: :accepted
         else
-            render json: { message: 'rating not updated' }, status: :not_successful
+            render json: { message: 'rating not updated' }, status: :not_acceptable
         end
     end
 
     def destroy
-        rating = Rating.find_by_id(rating_params['id'])
-
+        rating = Rating.find_by_id(params['id'])
+        # byebug
         if rating.destroy
-            render json: RatingSerializer.new(rating).serialized_json, status: :successful
+            render json: RatingSerializer.new(rating).serialized_json, status: :accepted
         else
-            render json: { message: 'rating could not be deleted; could not be found.' }, status: :not_successful
+            render json: { message: 'rating could not be deleted; could not be found.' }, status: :not_acceptable
         end
     end
 
     private
 
     def rating_params
-        params.require(:rating).permit(:id, :rating, :haunt_id, :user_id)
+        params.require(:rating).permit(:id, :rating, :haunt_id)
     end
 
-    def check_new_rating(rating)
-        if rating >= 1 && rating <= 5
-            return true
-        else
-            return false
-        end
+    def ratings_total(haunt_id)
+        ratings = Rating.find_by_id(haunt_id: haunt_id)
+        sum = 0
+        
+        ratings.each {|rating| sum+=rating}
+
+        return (sum / ratings.length)
     end
 end
